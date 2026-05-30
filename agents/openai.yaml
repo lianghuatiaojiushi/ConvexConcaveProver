@@ -1,0 +1,4 @@
+interface:
+  display_name: "ConvexConcaveProver"
+  short_description: "Prove convex-concave inequalities"
+  default_prompt: "Use $ConvexConcaveProver to prove an inequality by separating positive and negative terms."
