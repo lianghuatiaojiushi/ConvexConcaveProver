@@ -5,7 +5,7 @@
 核心目标是找到：
 
 $$
-\operatorname{left}(x) \ge h(x) \ge \operatorname{right}(x)
+L(x) \ge h(x) \ge R(x)
 $$
 
 一旦找到这样的直线 $h(x)$，原不等式就被证明。
@@ -16,11 +16,11 @@ $$
 
 1. 先把不等式整理成 $F(x)\ge 0$。
 2. 将 $F(x)$ 中的正项移动到左边，负项取正后移动到右边。
-3. 检查 $\operatorname{left}(x)$ 是否为 $\text{convex}$ 或 $\text{affine}$，$\operatorname{right}(x)$ 是否为 $\text{concave}$ 或 $\text{affine}$。
-4. 数值寻找 $\operatorname{left}(x)-\operatorname{right}(x)$ 的全局最小点 $x^\ast$。
+3. 检查 $L(x)$ 是否为 convex 或 affine，$R(x)$ 是否为 concave 或 affine。
+4. 数值寻找 $L(x)-R(x)$ 的全局最小点 $x^\ast$。
 5. 对 $x^\ast$ 做连分数展开，依次取收敛分数 $x_1,x_2,\ldots$ 作为候选切点。
-6. 在候选切点 $x_n$ 处作 $\operatorname{left}(x)$ 的切线 $h_n(x)$。
-7. 检查 $h_n(x)-\operatorname{right}(x)$ 的全局最小值是否非负。
+6. 在候选切点 $x_n$ 处作 $L(x)$ 的切线 $h_n(x)$。
+7. 检查 $h_n(x)-R(x)$ 的全局最小值是否非负。
 8. 若成功，则输出一条形式更美观的证明。
 
 数值计算只用于寻找候选切点；最终展示给用户的证明会尽量使用有理数切点和数学表达式，例如：
@@ -31,11 +31,11 @@ $$
 
 ## 支持的表达式
 
-目前支持以下函数和表达式：
+目前支持以下函数的线性组合：
 
 - 指数函数 $e^x$
 - 对数函数 $\ln x$
-- 幂函数`x^a` 或 `x**a`，其中 $a$ 是数字
+- 幂函数 $x^a (a>0)$
 - $x$
 - 常数
 
