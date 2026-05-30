@@ -50,7 +50,7 @@ Interpretation:
 - `F = left - right`.
 - A successful result requires `left` to be convex/affine, `right` to be concave/affine, and `min F >= 0` on the selected domain.
 - A line proof additionally requires `left(x) >= h(x) >= right(x)` on the domain. Candidate tangent points are tried as rational continued-fraction convergents of the numeric minimizer, and user-facing tangent formulas are printed in mathematical display form such as `e^(1/2)(x + 1/2)`.
-- When a line proof succeeds, end user-facing proofs with:
+- When a line proof succeeds, end user-facing proofs with `注意到`, the formula, and `证毕！` each on its own line:
 
 ```text
 注意到
