@@ -497,8 +497,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Restricted convex/concave inequality prover")
     parser.add_argument("inequality", help="Example: exp(x)-2*x-log(x)-1/sqrt(2)>=0")
     parser.add_argument("--domain", default="0,inf", help="positive domain, e.g. 0,inf or 0,10")
-    parser.add_argument("--line", help="optional affine certificate to verify, e.g. '41/14*(x-12/161)'")
-    parser.add_argument("--no-line", action="store_true", help="skip line-certificate search")
+    parser.add_argument("--line", help="optional affine proof line to verify, e.g. '41/14*(x-12/161)'")
+    parser.add_argument("--no-line", action="store_true", help="skip line-proof search")
     args = parser.parse_args()
 
     domain = parse_domain(args.domain)
@@ -544,12 +544,12 @@ def main() -> int:
         print(f"  h(x) = ({checked['m']:.12g})*x + ({checked['b']:.12g})")
         print(f"  min(left-h) ~= {checked['left_gap_min']:.12g} at x ~= {checked['left_gap_min_x']:.12g}")
         print(f"  min(h-right) ~= {checked['right_gap_min']:.12g} at x ~= {checked['right_gap_min_x']:.12g}")
-        print(f"  certificate: {'valid' if checked['ok'] else 'invalid'}")
+        print(f"  proof_line: {'valid' if checked['ok'] else 'invalid'}")
 
     if ok and not args.no_line and left_curv == "convex" and right_curv in {"concave", "affine"}:
         cert = find_line(left, right, domain, x_min)
         if cert:
-            print("line_certificate:")
+            print("line_proof:")
             print(f"  convergent_index = {cert['convergent_index']}")
             print(f"  tangent_at = {fraction_label(cert['rational'])} ~= {cert['x0']:.12g}")
             print(f"  exact: h(x) = {cert['expr']}")
@@ -557,12 +557,12 @@ def main() -> int:
             print(f"  min(h-right) ~= {cert['right_gap_min']:.12g} at x ~= {cert['right_gap_min_x']:.12g}")
             print("  left-h >= 0 follows from convexity of left and tangent construction")
             relation = ">" if strict and cert["right_gap_min"] > 1e-8 else ">="
-            print("proof_closing:")
+            print("proof:")
             print("  注意到")
             print(f"  {fmt_natural_terms(left)}>={cert['expr']}{relation}{fmt_natural_terms(right)}")
             print("  证毕！")
         else:
-            print("line_certificate: not found by the built-in finite candidate search")
+            print("line_proof: not found by the built-in finite candidate search")
 
     return 0 if ok else 1
 

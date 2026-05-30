@@ -1,6 +1,6 @@
 ---
 name: ConvexConcaveProver
-description: Prove one-variable inequalities by separating positive terms to the left and negative terms to the right, then verifying a convex/concave tangent-line certificate for expressions built from exp(x), log(x), powers x^a, constants, and linear terms. Use when Codex needs to prove or check inequalities of this restricted convex-concave form, find a line between the two sides, or reproduce the proof method from the supplied Chinese inequality note.
+description: Prove one-variable inequalities by separating positive terms to the left and negative terms to the right, then verifying a convex/concave tangent-line proof for expressions built from exp(x), log(x), powers x^a, constants, and linear terms. Use when Codex needs to prove or check inequalities of this restricted convex-concave form, find a line between the two sides, or reproduce the proof method from the supplied Chinese inequality note.
 ---
 
 # Convex-Concave Prover
@@ -11,7 +11,7 @@ Use this skill to prove restricted one-variable inequalities with the method:
 2. Move positive top-level terms of `F` to the left and negative top-level terms to the right.
 3. Check the left side is convex or affine and the right side is concave or affine.
 4. Minimize `left(x) - right(x)` on the positive domain.
-5. When possible, use continued-fraction convergents of the numeric minimizer to choose rational tangent points and report an exact-looking line certificate.
+5. When possible, use continued-fraction convergents of the numeric minimizer to choose rational tangent points and report an exact-looking line proof.
 
 ## Supported Input
 
@@ -49,8 +49,8 @@ Interpretation:
 - `right` contains the magnitudes of the negative terms.
 - `F = left - right`.
 - A successful result requires `left` to be convex/affine, `right` to be concave/affine, and `min F >= 0` on the selected domain.
-- A line certificate additionally requires `left(x) >= h(x) >= right(x)` on the domain. Candidate tangent points are tried as rational continued-fraction convergents of the numeric minimizer, and user-facing tangent formulas are printed in mathematical display form such as `e^(1/2)(x + 1/2)`.
-- When a line certificate succeeds, end user-facing proofs with:
+- A line proof additionally requires `left(x) >= h(x) >= right(x)` on the domain. Candidate tangent points are tried as rational continued-fraction convergents of the numeric minimizer, and user-facing tangent formulas are printed in mathematical display form such as `e^(1/2)(x + 1/2)`.
+- When a line proof succeeds, end user-facing proofs with:
 
 ```text
 注意到
@@ -58,7 +58,7 @@ Interpretation:
 证毕！
 ```
 
-Replace both ends with the actual normalized expressions, not placeholders like `f(x)` or `g(x)`. Choose `>` or `>=` according to the checked inequality and whether the certificate is strict.
+Replace both ends with the actual normalized expressions, not placeholders like `f(x)` or `g(x)`. Choose `>` or `>=` according to the checked inequality and whether the proof is strict.
 
 Read [references/method.md](references/method.md) when you need the proof template or the tangent-line formulas from the source note.
 
