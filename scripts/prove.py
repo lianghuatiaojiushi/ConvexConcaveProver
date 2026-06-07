@@ -344,9 +344,9 @@ def continued_fraction_convergents(x: float, max_terms: int = 12, max_denominato
     return convergents
 
 
-def tangent_line_at(left: List[Term], x0: float) -> Tuple[float, float]:
-    m = derivative(left, x0)
-    b = evaluate(left, x0) - m * x0
+def tangent_line_at(terms: List[Term], x0: float) -> Tuple[float, float]:
+    m = derivative(terms, x0)
+    b = evaluate(terms, x0) - m * x0
     return m, b
 
 
@@ -361,8 +361,13 @@ def term_tangent_expr(term: Term, point: Fraction) -> str:
     if term.atom.kind == "exp":
         shift = signed_fraction_label(1 - point)
         return f"{prefix}{exp_math_label(r)}(x{shift})"
+    if term.atom.kind == "log":
+        reciprocal = fraction_label(1 / point)
+        return f"{prefix}({reciprocal}*x - 1 + ln({r}))"
     if term.atom.kind == "power":
         a = term.atom.exponent
+        if abs(float(a) - 0.5) < 1e-12:
+            return f"{prefix}((x + {r})/(2*sqrt({r})))"
         return f"{prefix}(({r})^{a:g} + {a:g}*({r})^({a:g}-1)*(x - {r}))"
     raise ValueError(f"cannot format tangent for {term.atom.label()}")
 
@@ -372,28 +377,35 @@ def tangent_expr(left: List[Term], point: Fraction) -> str:
     return " + ".join(pieces).replace("+ -", "- ")
 
 
-def find_line(left: List[Term], right: List[Term], domain: Tuple[float, Optional[float]], x_center: float) -> Optional[dict]:
-    # Tangent to convex left side. It is automatically below left.
+def find_line(
+    left: List[Term],
+    right: List[Term],
+    domain: Tuple[float, Optional[float]],
+    x_center: float,
+    strict: bool,
+) -> Optional[dict]:
+    # Tangent to concave right side. It is automatically above right.
     candidates = continued_fraction_convergents(x_center)
     attempts = []
     for index, rational in enumerate(candidates, start=1):
         x0 = float(rational)
         if x0 <= domain[0] or (domain[1] is not None and x0 >= domain[1]):
             continue
-        m, b = tangent_line_at(left, x0)
-        lower_gap = line_gap_terms(right, m, b, 1)  # h - right
-        x_gap, min_gap = minimize_convex(lower_gap, domain)
+        m, b = tangent_line_at(right, x0)
+        upper_gap = line_gap_terms(left, m, b, -1)  # left - h
+        x_gap, min_gap = minimize_convex(upper_gap, domain)
         attempts.append((index, rational, min_gap))
-        if min_gap >= -1e-7:
+        line_proves = min_gap > 1e-8 if strict else min_gap >= -1e-7
+        if line_proves:
             return {
                 "convergent_index": index,
                 "rational": rational,
                 "x0": x0,
                 "m": m,
                 "b": b,
-                "expr": tangent_expr(left, rational),
-                "right_gap_min_x": x_gap,
-                "right_gap_min": min_gap,
+                "expr": tangent_expr(right, rational),
+                "left_gap_min_x": x_gap,
+                "left_gap_min": min_gap,
                 "attempts": attempts,
             }
     return None
@@ -547,19 +559,19 @@ def main() -> int:
         print(f"  proof_line: {'valid' if checked['ok'] else 'invalid'}")
 
     if ok and not args.no_line and left_curv == "convex" and right_curv in {"concave", "affine"}:
-        cert = find_line(left, right, domain, x_min)
+        cert = find_line(left, right, domain, x_min, strict)
         if cert:
             print("line_proof:")
             print(f"  convergent_index = {cert['convergent_index']}")
             print(f"  tangent_at = {fraction_label(cert['rational'])} ~= {cert['x0']:.12g}")
             print(f"  exact: h(x) = {cert['expr']}")
             print(f"  h(x) = ({cert['m']:.12g})*x + ({cert['b']:.12g})")
-            print(f"  min(h-right) ~= {cert['right_gap_min']:.12g} at x ~= {cert['right_gap_min_x']:.12g}")
-            print("  left-h >= 0 follows from convexity of left and tangent construction")
-            relation = ">" if strict and cert["right_gap_min"] > 1e-8 else ">="
+            print(f"  min(left-h) ~= {cert['left_gap_min']:.12g} at x ~= {cert['left_gap_min_x']:.12g}")
+            print("  h-right >= 0 follows from concavity of right and tangent construction")
+            left_relation = ">" if strict and cert["left_gap_min"] > 1e-8 else ">="
             print("proof:")
             print("  注意到")
-            print(f"  {fmt_natural_terms(left)}>={cert['expr']}{relation}{fmt_natural_terms(right)}")
+            print(f"  {fmt_natural_terms(left)}{left_relation}{cert['expr']}>={fmt_natural_terms(right)}")
             print("  证毕！")
         else:
             print("line_proof: not found by the built-in finite candidate search")

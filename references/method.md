@@ -48,9 +48,10 @@ The practical search implemented here is:
 
 1. Numerically locate the minimizer `x*` of `left-right`.
 2. Compute continued-fraction convergents `x1, x2, ...` of `x*`.
-3. Use the exact tangent line to the left side at each rational `xn`.
-4. Check whether `h_n(x) - right(x)` has nonnegative global minimum.
-5. Stop at the first successful convergent and print the tangent with exact rational data.
+3. Use the exact tangent line to the concave right side at each rational `xn`.
+4. Since a concave function lies below its tangent, `h_n(x) >= right(x)` follows automatically.
+5. Check whether `left(x) - h_n(x)` has nonnegative global minimum.
+6. Stop at the first successful convergent and print the tangent with exact rational data.
 
 ## Source Example
 
